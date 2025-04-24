@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class TrapeziumBorder extends ShapeBorder {
   @override
-  EdgeInsetsGeometry get dimensions => EdgeInsets.all(0.0);
+  EdgeInsetsGeometry get dimensions => const EdgeInsets.all(0.0);
 
   @override
   Path getOuterPath(Rect rect, {TextDirection? textDirection}) {

@@ -12,7 +12,7 @@ class DocumentPage extends StatefulWidget {
   final String title;
   final Color color;
 
-  DocumentPage({Key? key, required this.title, required this.color}) : super(key: key);
+  const DocumentPage({super.key, required this.title, required this.color});
 
   @override
   State<DocumentPage> createState() => _DocumentPageState();
@@ -50,7 +50,7 @@ class _DocumentPageState extends State<DocumentPage> {
       // Permission denied, show a dialog or message to the user
       print("Storage permission denied");
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Storage permission is required to access files.")),
+        const SnackBar(content: Text("Storage permission is required to access files.")),
       );
     } else if (status.isPermanentlyDenied) {
       // If permanently denied, direct the user to app settings
@@ -94,24 +94,24 @@ class _DocumentPageState extends State<DocumentPage> {
     String extension = _getFileExtension(fileName);
     switch (extension) {
       case 'pdf':
-        return Icon(Icons.picture_as_pdf, color: BColors.pdfFiles);
+        return const Icon(Icons.picture_as_pdf, color: BColors.pdfFiles);
       case 'ppt':
       case 'pptx':
-        return Icon(Icons.slideshow, color: BColors.pptFiles);
+        return const Icon(Icons.slideshow, color: BColors.pptFiles);
       case 'doc':
       case 'docx':
-        return Icon(Icons.description, color: BColors.wordFiles);
+        return const Icon(Icons.description, color: BColors.wordFiles);
       case 'xls':
-        return Icon(Icons.table_chart, color: BColors.excelFiles);
+        return const Icon(Icons.table_chart, color: BColors.excelFiles);
       case 'xlsx':
-        return Icon(Icons.grid_on, color: BColors.sheetFiles);
+        return const Icon(Icons.grid_on, color: BColors.sheetFiles);
       case 'txt':
-        return Icon(Icons.text_snippet, color: BColors.textFiles);
+        return const Icon(Icons.text_snippet, color: BColors.textFiles);
       case 'zip':
       case 'rar':
-        return Icon(Icons.archive, color: BColors.zipFiles);
+        return const Icon(Icons.archive, color: BColors.zipFiles);
       default:
-        return Icon(Icons.insert_drive_file, color: Colors.grey);
+        return const Icon(Icons.insert_drive_file, color: Colors.grey);
     }
   }
 
@@ -120,9 +120,9 @@ class _DocumentPageState extends State<DocumentPage> {
     return Scaffold(
       backgroundColor: BColors.lightGrey,
       appBar: AppBar(
-        title: Text(widget.title, style: TextStyle(color: BColors.white)),
+        title: Text(widget.title, style: const TextStyle(color: BColors.white)),
         backgroundColor: widget.color,
-        iconTheme: IconThemeData(
+        iconTheme: const IconThemeData(
           color: Colors.white, // Set the color of the back arrow here
         ),
       ),
@@ -132,7 +132,7 @@ class _DocumentPageState extends State<DocumentPage> {
             Padding(
               padding: const EdgeInsets.only(top: 18.0, left: 30, right: 30, bottom: 18),
               child: CupertinoSearchTextField(
-                padding: EdgeInsetsDirectional.symmetric(vertical: 15),
+                padding: const EdgeInsetsDirectional.symmetric(vertical: 15),
                 backgroundColor: Colors.white,
                 controller: _searchController,
                 placeholder: 'Click Here To Search',
@@ -148,7 +148,7 @@ class _DocumentPageState extends State<DocumentPage> {
                   ),
                   child: Column(
                     children: [
-                      Text('${_documents.length} Files', style: TextStyle(fontFamily: 'Raleway', fontWeight: FontWeight.w600)),
+                      Text('${_documents.length} Files', style: const TextStyle(fontFamily: 'Raleway', fontWeight: FontWeight.w600)),
                       Expanded(
                         child: ListView.builder(
                           itemCount: _documents.length,
@@ -160,21 +160,21 @@ class _DocumentPageState extends State<DocumentPage> {
                                 if (snapshot.connectionState == ConnectionState.waiting){
                                   return Card(
                                     elevation: 2,
-                                    margin: EdgeInsets.symmetric(vertical: 8),
+                                    margin: const EdgeInsets.symmetric(vertical: 8),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(12),
                                     ),
                                     child: ListTile(
                                       leading: _getFileIcon(file.name),
-                                      title: Text(file.name, style: TextStyle(fontWeight: FontWeight.bold)),
-                                      subtitle: Text("${_formatFileSize(file.size)} • Loading...", style: TextStyle(color: Colors.grey)),
-                                      trailing: Icon(Icons.more_vert),
+                                      title: Text(file.name, style: const TextStyle(fontWeight: FontWeight.bold)),
+                                      subtitle: Text("${_formatFileSize(file.size)} • Loading...", style: const TextStyle(color: Colors.grey)),
+                                      trailing: const Icon(Icons.more_vert),
                                     ),
                                   );
                                 } else if (snapshot.hasError){
                                   return Card(
                                     elevation: 2,
-                                    margin: EdgeInsets.symmetric(vertical: 8),
+                                    margin: const EdgeInsets.symmetric(vertical: 8),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(12),
                                     ),
@@ -182,20 +182,20 @@ class _DocumentPageState extends State<DocumentPage> {
                                       leading: _getFileIcon(file.name),
                                       title: Text(
                                         file.name,
-                                        style: TextStyle(fontWeight: FontWeight.bold),
+                                        style: const TextStyle(fontWeight: FontWeight.bold),
                                       ),
                                       subtitle: Text(
                                         "${_formatFileSize(file.size)} • Error",
-                                        style: TextStyle(color: Colors.grey),
+                                        style: const TextStyle(color: Colors.grey),
                                       ),
-                                      trailing: Icon(Icons.more_vert),
+                                      trailing: const Icon(Icons.more_vert),
                                     ),
                                   );
                                 } else {
                                   final lastModified = snapshot.data ?? "Unknown Date";
                                   return Card(
                                     elevation: 2,
-                                    margin: EdgeInsets.symmetric(vertical: 8),
+                                    margin: const EdgeInsets.symmetric(vertical: 8),
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(12),
                                     ),
@@ -203,13 +203,13 @@ class _DocumentPageState extends State<DocumentPage> {
                                       leading: _getFileIcon(file.name),
                                       title: Text(
                                         file.name,
-                                        style: TextStyle(fontWeight: FontWeight.bold),
+                                        style: const TextStyle(fontWeight: FontWeight.bold),
                                       ),
                                       subtitle: Text(
                                         "${_formatFileSize(file.size)} • $lastModified",
-                                        style: TextStyle(color: Colors.grey),
+                                        style: const TextStyle(color: Colors.grey),
                                       ),
-                                      trailing: Icon(Icons.more_vert),
+                                      trailing: const Icon(Icons.more_vert),
                                     ),
                                   );
                                 }

@@ -57,7 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         backgroundColor: BColors.allFiles,
         automaticallyImplyLeading: false,
-        title: Center(
+        title: const Center(
           child: Text('Batoro', style: TextStyle(fontFamily: 'Mistrully', color: Colors.white)),
         ),
       ),
@@ -67,7 +67,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Padding(
               padding: const EdgeInsets.only(top: 18.0, left: 30, right: 30, bottom: 18),
               child: CupertinoSearchTextField(
-                padding: EdgeInsetsDirectional.symmetric(vertical: 15),
+                padding: const EdgeInsetsDirectional.symmetric(vertical: 15),
                 backgroundColor: Colors.white,
                 controller: _searchController,
                 placeholder: 'Click Here To Search',
@@ -83,8 +83,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 child: Column(
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
+                    const Padding(
+                      padding: EdgeInsets.all(8.0),
                       child: Center(
                         child: Text('Document Files', style: TextStyle(fontFamily: 'Raleway', fontWeight: FontWeight.w600)),
                       ),
@@ -93,8 +93,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       padding: const EdgeInsets.all(8.0),
                       child: GridView.builder(
                         shrinkWrap: true,
-                        physics: NeverScrollableScrollPhysics(),
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        physics: const NeverScrollableScrollPhysics(),
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 3,
                           crossAxisSpacing: 8,
                           mainAxisSpacing: 8
@@ -186,30 +186,30 @@ class _HomeScreenState extends State<HomeScreen> {
           borderRadius: BorderRadius.circular(20),
           side: BorderSide(color: color, width: 2),
         ),
-        padding: EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(8.0),
       ),
       onPressed: onPressed,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            padding: EdgeInsets.all(10),
+            padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               color: color.withOpacity(0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(icon, color: color, size: 25),
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           Text(
             label,
-            style: TextStyle(fontFamily: 'Raleway', fontWeight: FontWeight.w600, fontSize: 12, color: Colors.black),
+            style: const TextStyle(fontFamily: 'Raleway', fontWeight: FontWeight.w600, fontSize: 12, color: Colors.black),
             textAlign: TextAlign.center,
           ),
-          SizedBox(height: 4),
+          const SizedBox(height: 4),
           Text(
             '$count Files',
-            style: TextStyle(fontSize: 10, color: Colors.grey),
+            style: const TextStyle(fontSize: 10, color: Colors.grey),
           ),
         ],
       ),
