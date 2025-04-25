@@ -1,5 +1,10 @@
+import 'dart:io';
+
+import 'package:batoro/utils/constants/file_scanner.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../utils/constants/colors.dart';
 import 'documents.dart';
@@ -13,45 +18,120 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _searchController = TextEditingController();
+  List<File> scannedFiles = [];
 
-  // final List<String> _docs = [
-  //   'assets/images/all_files.png',
-  //   'assets/images/pdf_files.png',
-  //   'assets/images/ppt_files.png',
-  //   'assets/images/word_files.png',
-  //   'assets/images/excel_files.png',
-  //   'assets/images/sheet_files.png',
-  //   'assets/images/text_files.png',
-  //   'assets/images/zip_files.png',
-  //   'assets/images/favourite_files.png',
-  // ];
-  //
-  // final List<Color> _colors = [
-  //   BColors.allFiles,
-  //   BColors.pdfFiles,
-  //   BColors.pptFiles,
-  //   BColors.wordFiles,
-  //   BColors.excelFiles,
-  //   BColors.sheetFiles,
-  //   BColors.textFiles,
-  //   BColors.zipFiles,
-  //   BColors.bookmarkedFiles,
-  // ];
+  @override
+  void initState() {
+    super.initState();
+    _requestAndScanFiles();
+  }
 
-  final List<Map<String, dynamic>> _docs = [
-    {'icon': Icons.folder, 'label': 'All Files', 'count': 25, 'color': BColors.allFiles},
-    {'icon': Icons.picture_as_pdf, 'label': 'PDF Files', 'count': 10, 'color': BColors.pdfFiles},
-    {'icon': Icons.slideshow, 'label': 'PPT Files', 'count': 5, 'color': BColors.pptFiles},
-    {'icon': Icons.insert_drive_file, 'label': 'Word Files', 'count': 1, 'color': BColors.wordFiles},
-    {'icon': Icons.table_chart, 'label': 'Excel Files', 'count': 2, 'color': BColors.excelFiles},
-    {'icon': Icons.grid_on, 'label': 'Sheet Files', 'count': 4, 'color': BColors.sheetFiles},
-    {'icon': Icons.description, 'label': 'Text Files', 'count': 1, 'color': BColors.textFiles},
-    {'icon': Icons.archive, 'label': 'Zip Files', 'count': 2, 'color': BColors.zipFiles},
-    {'icon': Icons.bookmark, 'label': 'Bookmark Files', 'count': 25, 'color': BColors.bookmarkedFiles},
-  ];
+  Future<void> _requestAndScanFiles() async {
+    final permissionStatus = await Permission.manageExternalStorage.request();
+
+    if (permissionStatus.isGranted) {
+      Directory? directory = await getExternalStorageDirectory();
+      if (directory != null) {
+        List<File> files = await scanFilesWithExtensions(
+          directory: directory,
+          extensions: ['pdf', 'ppt', 'pptx', 'doc', 'docx', 'xls', 'xlsx', 'txt', 'zip'],
+        );
+        setState(() {
+          scannedFiles = files;
+        });
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Storage permission denied.")),
+      );
+      if (await Permission.manageExternalStorage.isPermanentlyDenied) {
+        openAppSettings();
+      }
+    }
+  }
+
+  List<Map<String, dynamic>> _generateDocStats() {
+    Map<String, int> extensionCounts = {
+      'pdf': 0,
+      'ppt': 0,
+      'pptx': 0,
+      'doc': 0,
+      'docx': 0,
+      'xls': 0,
+      'xlsx': 0,
+      'txt': 0,
+      'zip': 0,
+    };
+
+    for (var file in scannedFiles) {
+      String ext = file.path.split('.').last.toLowerCase();
+      if (extensionCounts.containsKey(ext)) {
+        extensionCounts[ext] = extensionCounts[ext]! + 1;
+      }
+    }
+
+    return [
+      {
+        'icon': Icons.folder,
+        'label': 'All Files',
+        'count': scannedFiles.length,
+        'color': BColors.allFiles
+      },
+      {
+        'icon': Icons.picture_as_pdf,
+        'label': 'PDF Files',
+        'count': extensionCounts['pdf'],
+        'color': BColors.pdfFiles
+      },
+      {
+        'icon': Icons.slideshow,
+        'label': 'PPT Files',
+        'count': (extensionCounts['ppt'] ?? 0) + (extensionCounts['pptx'] ?? 0),
+        'color': BColors.pptFiles
+      },
+      {
+        'icon': Icons.insert_drive_file,
+        'label': 'Word Files',
+        'count': (extensionCounts['doc'] ?? 0) + (extensionCounts['docx'] ?? 0),
+        'color': BColors.wordFiles
+      },
+      {
+        'icon': Icons.table_chart,
+        'label': 'Excel Files',
+        'count': (extensionCounts['xls'] ?? 0) + (extensionCounts['xlsx'] ?? 0),
+        'color': BColors.excelFiles
+      },
+      {
+        'icon': Icons.grid_on,
+        'label': 'Sheet Files',
+        'count': extensionCounts['xls'] ?? 0,
+        'color': BColors.sheetFiles
+      },
+      {
+        'icon': Icons.description,
+        'label': 'Text Files',
+        'count': extensionCounts['txt'],
+        'color': BColors.textFiles
+      },
+      {
+        'icon': Icons.archive,
+        'label': 'Zip Files',
+        'count': extensionCounts['zip'],
+        'color': BColors.zipFiles
+      },
+      {
+        'icon': Icons.bookmark,
+        'label': 'Bookmark Files',
+        'count': 0,
+        'color': BColors.bookmarkedFiles
+      },
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
+    final docs = _generateDocStats();
+
     return Scaffold(
       backgroundColor: BColors.lightGrey,
       appBar: AppBar(
@@ -73,7 +153,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 placeholder: 'Click Here To Search',
               ),
             ),
-            //SizedBox(height: 57),
             Padding(
               padding: const EdgeInsets.only(left: 25.0, right: 25),
               child: Container(
@@ -99,24 +178,32 @@ class _HomeScreenState extends State<HomeScreen> {
                           crossAxisSpacing: 8,
                           mainAxisSpacing: 8
                         ),
-                        itemCount: _docs.length,
+                        itemCount: docs.length,
                         itemBuilder: (context, index){
-                          final doc = _docs[index];
+                          final doc = docs[index];
                           return _buildGridButton(
                             icon: doc['icon'],
                             label: doc['label'],
                             count: doc['count'],
                             color: doc['color'],
-                            onPressed: (){
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => DocumentPage(
-                                    title: doc['label'],
-                                    color: doc['color'],
+                            onPressed: () async {
+                              final status = await Permission.manageExternalStorage.request();
+                              if (status.isGranted) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => DocumentPage(
+                                      title: doc['label'],
+                                      color: doc['color'],
+                                    ),
                                   ),
-                                ),
-                              );
+                                );
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text("Permission required to access documents.")),
+                                );
+                                if (status.isPermanentlyDenied) openAppSettings();
+                              }
                             },
                           );
                         },
@@ -138,47 +225,7 @@ class _HomeScreenState extends State<HomeScreen> {
     required int count,
     required Color color,
     required VoidCallback onPressed
-  }){
-    // return Container(
-    //   padding: const EdgeInsets.all(8.0),
-    //   // decoration: BoxDecoration(
-    //   //   borderRadius: BorderRadius.circular(20),
-    //   //   border: Border.all(color: color, width: 2),
-    //   //   image: DecorationImage(
-    //   //     image: AssetImage(imagePath),
-    //   //     fit: BoxFit.contain,
-    //   //   ),
-    //   // ),
-    //   decoration: BoxDecoration(
-    //     borderRadius: BorderRadius.circular(20),
-    //     border: Border.all(color: color, width: 2),
-    //     color: Colors.white,
-    //   ),
-    //   child: Column(
-    //     mainAxisAlignment: MainAxisAlignment.center,
-    //     children: [
-    //       Container(
-    //         padding: EdgeInsets.all(10),
-    //         decoration: BoxDecoration(
-    //           color: color?.withOpacity(0.1),
-    //           shape: BoxShape.circle,
-    //         ),
-    //         child: Icon(icon, color: color, size: 30),
-    //       ),
-    //       SizedBox(height: 8),
-    //       Text(
-    //         label,
-    //         style: TextStyle(fontFamily: 'Raleway', fontWeight: FontWeight.w600, fontSize: 8),
-    //         textAlign: TextAlign.center,
-    //       ),
-    //       SizedBox(height: 4),
-    //       Text(
-    //         '$count Files',
-    //         style: TextStyle(fontSize: 10, color: Colors.grey),
-    //       ),
-    //     ],
-    //   ),
-    // );
+  }) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
         foregroundColor: color, backgroundColor: Colors.white,
